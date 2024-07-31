@@ -1,18 +1,16 @@
-import React from "react";
+import React, { Suspense } from "react";
 import ReactDOM from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { ThemeProvider } from "./components/theme-provider.tsx";
+import Loader from "./components/ui/Loader.tsx";
 import "./index.css";
-import Root from "./root.tsx";
-
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Root />,
-  },
-]);
+import Root from "./Root.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <Suspense fallback={<Loader />}>
+      <ThemeProvider defaultTheme="dark" storageKey="pass-keeper-ui-theme">
+        <Root />
+      </ThemeProvider>
+    </Suspense>
   </React.StrictMode>
 );

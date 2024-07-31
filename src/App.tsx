@@ -1,16 +1,29 @@
-import { Button } from "@/components/ui/button";
+import React from "react";
+import { Route, Routes } from "react-router-dom";
 import "./App.css";
-import { Card, CardHeader, CardTitle } from "./components/ui/card";
+
+const HomePage = React.lazy(() => import("./pages/Home"));
+const SettingsPage = React.lazy(() => import("./pages/Settings"));
+
+const ROUTES = [
+  {
+    path: "/",
+    element: <HomePage />,
+  },
+  {
+    path: "/settings",
+    element: <SettingsPage />,
+  },
+];
 
 function App() {
   return (
-    <div className="h-screen p-4 flex justify-center items-center">
-      <Card>
-        <CardHeader>
-          <CardTitle>Hello world!</CardTitle>
-          <Button>Click me</Button>
-        </CardHeader>
-      </Card>
+    <div>
+      <Routes>
+        {ROUTES.map((route) => (
+          <Route key={route.path} path={route.path} element={route.element} />
+        ))}
+      </Routes>
     </div>
   );
 }
