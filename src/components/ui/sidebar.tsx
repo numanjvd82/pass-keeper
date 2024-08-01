@@ -36,18 +36,15 @@ const Menu = ({ open }: { open: boolean }) => {
         const Icon = icon;
         const match = pathname === path;
         return (
-          <Link to={path}>
+          <Link key={id} to={path}>
             <div
-              key={id}
               className={`transition-all rounded-md px-[5px] py-1 
               ${match ? "dark:bg-secondary-foreground bg-secondary " : ""}
               flex justify-between items-center my-5`}
             >
-              <Link to={path}>
-                <Button size="sm">
-                  <Icon size={ICON_SIZE} />
-                </Button>
-              </Link>
+              <Button size="sm">
+                <Icon size={ICON_SIZE} />
+              </Button>
               <AnimatePresence>
                 {open ? (
                   <motion.p
@@ -99,8 +96,8 @@ export function Sidebar() {
     );
   };
 
-  const Footer = ({ open }: { open: boolean }) => {
-    const { theme, setTheme } = useTheme();
+  const Footer = () => {
+    const { setTheme } = useTheme();
     return (
       <div className="p-2 transition-all">
         <div className="ml-2">
@@ -140,7 +137,7 @@ export function Sidebar() {
       <Separator />
       <Menu open={open} />
       <Separator />
-      <Footer open={open} />
+      <Footer />
     </motion.div>
   );
 }

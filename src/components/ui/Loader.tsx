@@ -1,17 +1,23 @@
 import { Oval } from "react-loader-spinner";
 
-export default function Loader() {
+export const Loader = () => {
   return (
-    <div className="h-screen flex justify-center items-center">
-      <Oval
-        visible={true}
-        height="80"
-        width="80"
-        color="#0f172a"
-        ariaLabel="oval-loading"
-        wrapperStyle={{}}
-        wrapperClass=""
-      />
+    <Oval
+      visible={true}
+      height="80"
+      width="80"
+      color="hsl(180 62% 71%)" // bg-primary
+      ariaLabel="oval-loading"
+      secondaryColor="hsl(180 9% 82%)" // bg-secondary
+      wrapperClass=""
+    />
+  );
+};
+
+export default function Splash() {
+  return (
+    <div className="bg-white dark:bg-black h-screen flex justify-center items-center bg-primary ">
+      <Loader />
     </div>
   );
 }
