@@ -1,9 +1,16 @@
 import { ICON_SIZE } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { Home, Settings, SidebarOpen } from "lucide-react";
+import { Home, Moon, Settings, SidebarOpen, Sun } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useTheme } from "../theme-provider";
 import { Button } from "./button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./dropdown-menu";
 import { Separator } from "./separator";
 
 const links = [
@@ -24,7 +31,7 @@ const links = [
 const Menu = ({ open }: { open: boolean }) => {
   const { pathname } = useLocation();
   return (
-    <div className="mt-2 p-4">
+    <div className="flex-1 mt-2 p-4">
       {links.map(({ id, icon, name, path }) => {
         const Icon = icon;
         const match = pathname === path;
@@ -32,17 +39,12 @@ const Menu = ({ open }: { open: boolean }) => {
           <Link to={path}>
             <div
               key={id}
-              className={`rounded-md px-[5px] py-1 
-              ${match ? "bg-primary " : "bg-secondary"}
+              className={`transition-all rounded-md px-[5px] py-1 
+              ${match ? "dark:bg-secondary-foreground bg-secondary " : ""}
               flex justify-between items-center my-5`}
             >
               <Link to={path}>
-                <Button
-                  className={`
-                     bg-secondary text-white hover:text-black
-                `}
-                  size="sm"
-                >
+                <Button size="sm">
                   <Icon size={ICON_SIZE} />
                 </Button>
               </Link>
@@ -55,7 +57,7 @@ const Menu = ({ open }: { open: boolean }) => {
                     exit={{
                       opacity: 0,
                     }}
-                    className={match ? "text-black" : "text-white"}
+                    className={`text-sm ${match && "dark:text-black"}`}
                   >
                     {name}
                   </motion.p>
@@ -97,16 +99,48 @@ export function Sidebar() {
     );
   };
 
+  const Footer = ({ open }: { open: boolean }) => {
+    const { theme, setTheme } = useTheme();
+    return (
+      <div className="p-2 transition-all">
+        <div className="ml-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="icon">
+                <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <span className="sr-only">Toggle theme</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setTheme("light")}>
+                Light
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("dark")}>
+                Dark
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("system")}>
+                System
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <motion.div
       animate={{
         width: open ? "256px" : "80px",
       }}
-      className={`bg-primary-foreground  h-full`}
+      className={`dark:bg-primary-foreground border-r-[1px]  h-full flex flex-col`}
     >
       <Header />
-      <Separator className="bg-primary" />
+      <Separator />
       <Menu open={open} />
+      <Separator />
+      <Footer open={open} />
     </motion.div>
   );
 }
