@@ -1,6 +1,5 @@
 import { db } from ".";
-
-export const sql = String.raw;
+import { sql } from "./lib/utils";
 
 export function initDb() {
   // write to the terminal
@@ -12,6 +11,11 @@ export function initDb() {
       hashedPassword TEXT NOT NULL
     );
   `);
+
+  // // alter user table to add a column for name
+  // db.exec(sql`
+  //   ALTER TABLE users ADD COLUMN name TEXT NOT NULL DEFAULT '';
+  // `);
 
   db.exec(sql`
     CREATE TABLE IF NOT EXISTS folders (

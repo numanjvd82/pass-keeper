@@ -6,6 +6,7 @@ import { Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { columns, PasswordEntry } from "@/home/columns";
 import { DataTable } from "@/home/Table";
+import useQueryParams from "@/lib/hooks/useQueryParams";
 
 const passwordEntries: PasswordEntry[] = [
   {
@@ -35,6 +36,8 @@ const passwordEntries: PasswordEntry[] = [
 ];
 
 export default function Home() {
+  const { setParams, getParams } = useQueryParams();
+  const { search } = getParams(["search"]);
   return (
     <div className="h-screen">
       <Card className="w-full">
@@ -48,7 +51,16 @@ export default function Home() {
               Home
             </h1>
             <div className="flex items-center">
-              <Input className="mr-2" placeholder="Search By Name" />
+              <Input
+                value={search}
+                onChange={(e) =>
+                  setParams({
+                    search: e.target.value,
+                  })
+                }
+                className="mr-2"
+                placeholder="Search By Name"
+              />
               <Button size="sm">
                 <Plus size={ICON_SIZE} />
               </Button>

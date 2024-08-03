@@ -1,6 +1,6 @@
 import { db } from "../..";
 import { FullUser } from "../../controllers/auth/registerUser";
-import { sql } from "../../dbInit";
+import { sql } from "../../lib/utils";
 
 export function findOne(email: string): FullUser | null {
   if (!email) {

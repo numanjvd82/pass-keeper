@@ -1,16 +1,18 @@
 import { Oval } from "react-loader-spinner";
 
-export const Loader = () => {
+export const Loader = ({ className = "" }: { className?: string }) => {
   return (
-    <Oval
-      visible={true}
-      height="80"
-      width="80"
-      color="hsl(180 62% 71%)" // bg-primary
-      ariaLabel="oval-loading"
-      secondaryColor="hsl(180 9% 82%)" // bg-secondary
-      wrapperClass=""
-    />
+    <div className={className}>
+      <Oval
+        visible={true}
+        height="80"
+        width="80"
+        color="hsl(180 62% 71%)" // bg-primary
+        ariaLabel="oval-loading"
+        secondaryColor="hsl(180 9% 82%)" // bg-secondary
+        wrapperClass=""
+      />
+    </div>
   );
 };
 

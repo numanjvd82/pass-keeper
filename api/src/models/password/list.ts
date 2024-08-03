@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { Password } from ".";
 import { db } from "../..";
-import { sql } from "../../dbInit";
+import { sql } from "../../lib/utils";
 
 export const schema = z.object({
   search: z.string().nullish(),
@@ -14,7 +14,10 @@ export const generateWhereClause = ({ search }: PasswordSchemaType) => {
   if (search) {
     whereClause.push(`name LIKE '%${search}%'`);
   }
-  return whereClause.length ? whereClause.join(" AND ") : "";
+  if (whereClause.length === 0) {
+    return;
+  }
+  return whereClause.join(" AND ");
 };
 
 export const listSchema = z.object({
@@ -23,14 +26,15 @@ export const listSchema = z.object({
 
 export type ListSchemaType = z.infer<typeof listSchema>;
 
-export const generateListQuery = ({ filter }: ListSchemaType) => {
-  const { filter: parsedFilter } = listSchema.parse(filter);
-  const whereClause = generateWhereClause(parsedFilter);
+export const generateListQuery = (input: ListSchemaType) => {
+  const { filter } = listSchema.parse(input);
+  const whereClause = generateWhereClause(filter);
+  console.log(whereClause);
 
   const query = sql`
     SELECT *
     FROM passwords
-    ${sql`WHERE ${whereClause}`}
+    ${whereClause && sql`WHERE ${whereClause}`}
   `;
 
   const stmt = db.prepare(query);

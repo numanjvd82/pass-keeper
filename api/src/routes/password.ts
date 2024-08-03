@@ -5,17 +5,17 @@ const passwordRouter = express.Router();
 
 passwordRouter.get("/", (req: Request, res: Response) => {
   try {
-    const queryParams = {
+    const list = passwordModel.list({
       filter: {
-        search: req.query.search ? String(req.query.search) : undefined,
+        search: (req.query.search as string | undefined) || "",
       },
-    };
+    });
 
-    const list = passwordModel.list(queryParams);
-
-    res.json(list);
+    return res.json(list);
   } catch (e: any) {
-    console.log(e.message);
+    if (process.env.ENV === "DEV") {
+      console.log(e);
+    }
     return res.status(400).json({ error: e.message });
   }
 });
