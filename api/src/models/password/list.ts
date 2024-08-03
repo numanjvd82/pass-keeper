@@ -3,25 +3,39 @@ import { Password } from ".";
 import { db } from "../..";
 import { sql } from "../../lib/utils";
 
-export const schema = z.object({
-  search: z.string().nullish(),
+export const filterSchema = z.object({
+  search: z.string().optional(),
 });
 
-type PasswordSchemaType = z.infer<typeof schema>;
+type PasswordFilterSchemaType = z.infer<typeof filterSchema>;
 
-export const generateWhereClause = ({ search }: PasswordSchemaType) => {
-  const whereClause = [];
-  if (search) {
-    whereClause.push(`name LIKE '%${search}%'`);
+const SELECT_CLAUSE = sql`
+  SELECT  "p".id,
+          "p".name as passwordName,
+          "p".userId,
+          "p".username,
+          "p".password,
+          "f".name as folder
+`;
+
+const FROM_CLAUSE = sql`
+  FROM passwords "p" 
+  INNER JOIN folders "f"
+  ON "p".folderId = "f".id
+`;
+
+export const generateWhereClause = (filter: PasswordFilterSchemaType) => {
+  const whereClause: string[] = [];
+
+  if (filter.search && filter.search.length > 0) {
+    whereClause.push(sql`"p".name LIKE '%${filter.search}%'`);
   }
-  if (whereClause.length === 0) {
-    return;
-  }
-  return whereClause.join(" AND ");
+
+  return whereClause.length > 0 ? whereClause.join(sql` AND `) : "";
 };
 
 export const listSchema = z.object({
-  filter: schema,
+  filter: filterSchema,
 });
 
 export type ListSchemaType = z.infer<typeof listSchema>;
@@ -29,11 +43,11 @@ export type ListSchemaType = z.infer<typeof listSchema>;
 export const generateListQuery = (input: ListSchemaType) => {
   const { filter } = listSchema.parse(input);
   const whereClause = generateWhereClause(filter);
-  console.log(whereClause);
+  console.log("whereClause", whereClause);
 
   const query = sql`
-    SELECT *
-    FROM passwords
+    ${SELECT_CLAUSE}
+    ${FROM_CLAUSE}
     ${whereClause && sql`WHERE ${whereClause}`}
   `;
 

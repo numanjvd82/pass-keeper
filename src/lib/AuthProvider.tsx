@@ -1,5 +1,11 @@
 import { toast } from "@/components/ui/use-toast";
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import { axiosClient } from "./axios";
 import { useLogin } from "./hooks/data/useLogin";
@@ -36,7 +42,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     authenticated: false,
   });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (authState.authenticated) {
       navigate("/");
     } else {

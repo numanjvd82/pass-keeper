@@ -21,7 +21,6 @@ import {
 import { Header } from "@/components/ui/Header";
 import { Input } from "@/components/ui/input";
 import { Toaster } from "@/components/ui/toaster";
-import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/lib/AuthProvider";
 import { Link } from "react-router-dom";
 
@@ -33,7 +32,6 @@ const loginSchema = z.object({
 type LoginValues = z.infer<typeof loginSchema>;
 
 export default function Login() {
-  const { toast } = useToast();
   const { onLogin } = useAuth();
   const { setTheme } = useTheme();
   const form = useForm<LoginValues>({

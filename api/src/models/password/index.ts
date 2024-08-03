@@ -3,7 +3,7 @@ import { generateListQuery } from "./list";
 export type Password = {
   id: number;
   userId: number;
-  name: string;
+  passwordName: string;
   folder: string;
   username: string;
   password: string;

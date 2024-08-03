@@ -1,23 +1,8 @@
-import express, { Request, Response } from "express";
-import { passwordModel } from "../models/password";
+import express from "express";
+import { listPasswords } from "../controllers/password/list";
 
 const passwordRouter = express.Router();
 
-passwordRouter.get("/", (req: Request, res: Response) => {
-  try {
-    const list = passwordModel.list({
-      filter: {
-        search: (req.query.search as string | undefined) || "",
-      },
-    });
-
-    return res.json(list);
-  } catch (e: any) {
-    if (process.env.ENV === "DEV") {
-      console.log(e);
-    }
-    return res.status(400).json({ error: e.message });
-  }
-});
+passwordRouter.get("/", listPasswords);
 
 export default passwordRouter;

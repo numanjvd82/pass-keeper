@@ -7,15 +7,11 @@ export function initDb() {
   db.exec(sql`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
       email TEXT NOT NULL UNIQUE,
       hashedPassword TEXT NOT NULL
     );
   `);
-
-  // // alter user table to add a column for name
-  // db.exec(sql`
-  //   ALTER TABLE users ADD COLUMN name TEXT NOT NULL DEFAULT '';
-  // `);
 
   db.exec(sql`
     CREATE TABLE IF NOT EXISTS folders (
@@ -35,22 +31,6 @@ export function initDb() {
       password TEXT NOT NULL
     );
   `);
-
-  // ! This is for testing purposes only
-  // db.exec(sql`
-  //   INSERT INTO folders (userId, name) VALUES
-  //     (1, 'Personal'),
-  //     (1, 'Finance'),
-  //     (1, 'Social')
-  //   `);
-
-  // db.exec(sql`
-  // INSERT INTO passwords (userId, name, folderId, username, password) VALUES
-  // (1, 'Email Account', 10, 'user@example.com', 'encryptedPassword1'),
-  // (1, 'Bank Account', 11, 'bankuser123', 'encryptedPassword2'),
-  // (1, 'Social Media', 12, 'socialuser456', 'encryptedPassword3');
-
-  // `);
 
   console.log("Database initialized.");
 }
