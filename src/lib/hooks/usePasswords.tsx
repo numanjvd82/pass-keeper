@@ -28,7 +28,7 @@ export const usePasswords = (query: Query) => {
   };
 
   const { data, isLoading, error, refetch } = useQuery(
-    "passwords",
+    ["passwords", query.filter],
     fetchPasswords
   );
 

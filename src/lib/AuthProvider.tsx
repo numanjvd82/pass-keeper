@@ -1,16 +1,9 @@
 import { toast } from "@/components/ui/use-toast";
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useState,
-} from "react";
-import { useNavigate } from "react-router-dom";
+import { createContext, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // Added useLocation
 import { axiosClient } from "./axios";
 import { useLogin } from "./hooks/data/useLogin";
-
-const TOKEN_KEY = "token";
+import { isTokenExpired, TOKEN_KEY } from "./utils";
 
 type AuthState = {
   token: string | undefined;
@@ -42,25 +35,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     authenticated: false,
   });
 
-  useLayoutEffect(() => {
-    if (authState.authenticated) {
-      navigate("/");
+  const checkToken = () => {
+    const token = localStorage.getItem(TOKEN_KEY);
+
+    if (token && !isTokenExpired(token)) {
+      setAuthState({ token, authenticated: true });
     } else {
+      setAuthState({ token: undefined, authenticated: false });
+      axiosClient.defaults.headers.common["Authorization"] = undefined;
+      localStorage.removeItem(TOKEN_KEY);
       navigate("/login");
     }
-  }, [authState.authenticated]);
+  };
 
   useEffect(() => {
-    const checkToken = async () => {
-      const token = localStorage.getItem(TOKEN_KEY);
-      if (token) {
-        setAuthState({ token, authenticated: true });
-        axiosClient.defaults.headers.common[
-          "Authorization"
-        ] = `Bearer ${token}`;
-      }
-    };
-
     checkToken();
   }, []);
 
@@ -93,10 +81,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const logoutUser = async () => {
+  const logoutUser = () => {
+    // Reset auth state on logout
     setAuthState({ token: undefined, authenticated: false });
-    axiosClient.defaults.headers.common["Authorization"] = "";
+    axiosClient.defaults.headers.common["Authorization"] = undefined;
     localStorage.removeItem(TOKEN_KEY);
+    navigate("/login");
   };
 
   const value = {
