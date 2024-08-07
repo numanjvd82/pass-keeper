@@ -6,7 +6,8 @@ import { Password } from "../types";
 
 type Query = {
   filter: {
-    search: string | undefined;
+    search?: string;
+    folder?: string;
   };
 };
 
@@ -29,7 +30,7 @@ export const usePasswords = (query: Query) => {
 
   const { data, isLoading, error, refetch } = useQuery(
     ["passwords", query.filter],
-    fetchPasswords
+    () => fetchPasswords()
   );
 
   return {

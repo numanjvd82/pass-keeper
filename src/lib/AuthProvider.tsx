@@ -1,5 +1,11 @@
 import { toast } from "@/components/ui/use-toast";
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { useNavigate } from "react-router-dom"; // Added useLocation
 import { axiosClient } from "./axios";
 import { useLogin } from "./hooks/data/useLogin";
@@ -35,7 +41,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     authenticated: false,
   });
 
-  const checkToken = () => {
+  const checkToken = useCallback(() => {
     const token = localStorage.getItem(TOKEN_KEY);
 
     if (token && !isTokenExpired(token)) {
@@ -46,11 +52,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.removeItem(TOKEN_KEY);
       navigate("/login");
     }
-  };
+  }, [navigate]);
 
   useEffect(() => {
     checkToken();
-  }, []);
+  }, [checkToken]);
 
   const loginUser = async (email: string, password: string) => {
     if (isLoading) console.log("Loading...");
@@ -72,12 +78,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       localStorage.setItem(TOKEN_KEY, data.accessToken);
       navigate("/");
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
     }
   };
 

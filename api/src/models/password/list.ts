@@ -5,6 +5,7 @@ import { sql } from "../../lib/utils";
 
 export const filterSchema = z.object({
   search: z.string().optional(),
+  folder: z.string().optional(),
 });
 
 type PasswordFilterSchemaType = z.infer<typeof filterSchema>;
@@ -31,6 +32,10 @@ export const generateWhereClause = (filter: PasswordFilterSchemaType) => {
     whereClause.push(sql`"p".name LIKE '%${filter.search}%'`);
   }
 
+  if (filter.folder && filter.folder.length > 0) {
+    whereClause.push(sql`"f".name = '${filter.folder}'`);
+  }
+
   return whereClause.length > 0 ? whereClause.join(sql` AND `) : "";
 };
 
@@ -43,7 +48,6 @@ export type ListSchemaType = z.infer<typeof listSchema>;
 export const generateListQuery = (input: ListSchemaType) => {
   const { filter } = listSchema.parse(input);
   const whereClause = generateWhereClause(filter);
-  console.log("whereClause", whereClause);
 
   const query = sql`
     ${SELECT_CLAUSE}

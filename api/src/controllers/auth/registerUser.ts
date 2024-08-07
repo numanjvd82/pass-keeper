@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { z } from "zod";
 import { db } from "../..";
 import { sql } from "../../lib/utils";
-import { userModel } from "../../models/User";
+import { userModel } from "../../models/user";
 
 const registerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(20),
@@ -37,7 +37,7 @@ export function registerUser(req: Request, res: Response) {
     const parsedValues = registerSchema.parse({ email, password, name });
 
     // check if email is already in use
-    const existingUser = userModel.findOne(email);
+    const existingUser = userModel.findOneByEmail(email);
 
     if (existingUser) {
       return res.status(400).json({ error: "Email already in use" });

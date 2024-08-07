@@ -4,9 +4,11 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
 import morgan from "morgan";
+import { fetchUser } from "./controllers/auth/fetchUser";
 import { initDb } from "./dbInit";
 import authenticateUser from "./middlewares/authenticate";
 import authRouter from "./routes/auth";
+import folderRouter from "./routes/folder";
 import passwordRouter from "./routes/password";
 
 dotenv.config();
@@ -27,9 +29,12 @@ app.use(cors());
 app.use(morgan("dev"));
 
 app.use("/auth", authRouter);
-app.use("/passwords", authenticateUser, passwordRouter);
+app.use(authenticateUser);
+app.get("/user", fetchUser);
+app.use("/passwords", passwordRouter);
+app.use("/folders", folderRouter);
 
-app.get("/", authenticateUser, (req: Request, res: Response) => {
+app.get("/", (req: Request, res: Response) => {
   res.send("Api Health OK");
 });
 

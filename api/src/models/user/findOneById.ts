@@ -2,13 +2,13 @@ import { db } from "../..";
 import { FullUser } from "../../controllers/auth/registerUser";
 import { sql } from "../../lib/utils";
 
-export function findOne(email: string): FullUser | null {
-  if (!email) {
+export function findOneById(id: number): FullUser | null {
+  if (!id) {
     return null;
   }
 
-  const stmt = db.prepare(sql`SELECT * FROM users WHERE email = ?`);
-  const user = stmt.get(email);
+  const stmt = db.prepare(sql`SELECT * FROM users WHERE id = ?`);
+  const user = stmt.get(id);
 
   if (!user) {
     return null;

@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import { sign } from "jsonwebtoken";
-import { userModel } from "../../models/User";
+import { userModel } from "../../models/user";
 
 export function loginUser(req: Request, res: Response) {
   const { email, password } = req.body;
@@ -10,7 +10,7 @@ export function loginUser(req: Request, res: Response) {
     return res.status(400).json({ error: "Invalid request" });
   }
 
-  const user = userModel.findOne(email);
+  const user = userModel.findOneByEmail(email);
 
   if (!user) {
     return res.status(400).json({ error: "Invalid email or password" });

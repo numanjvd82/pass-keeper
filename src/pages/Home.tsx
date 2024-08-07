@@ -1,26 +1,23 @@
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { ICON_SIZE } from "@/lib/utils";
-import { Plus } from "lucide-react";
 
 import { columns } from "@/components/home/columns";
+import { AddPasswordDialog } from "@/components/home/components/AddDialog";
+import { FolderDropdown } from "@/components/home/components/FolderDropdown";
 import { DataTable } from "@/components/home/Table";
 import { Input } from "@/components/ui/input";
-import { Loader } from "@/components/ui/Loader";
 import { usePasswords } from "@/lib/hooks/usePasswords";
 import useQueryParams from "@/lib/hooks/useQueryParams";
 
 export default function Home() {
   const { setParams, getParams } = useQueryParams();
-  const { search } = getParams(["search"]);
+  const { search, folder } = getParams(["search", "folder"]);
 
-  const { data, isLoading } = usePasswords({
+  const { data } = usePasswords({
     filter: {
       search,
+      folder,
     },
   });
-
-  if (isLoading) return <Loader />;
 
   const Table = () => {
     if (!data) return null;
@@ -40,13 +37,16 @@ export default function Home() {
       <Card className="w-full">
         <CardHeader>
           <div className="flex justify-between items-center px-1">
-            <h1
-              className="
+            <div className="flex items-center justify-center gap-2">
+              <h1
+                className="
               text-2xl font-semibold
             "
-            >
-              Home
-            </h1>
+              >
+                Home
+              </h1>
+              <FolderDropdown />
+            </div>
             <div className="flex items-center">
               <Input
                 value={search}
@@ -58,9 +58,7 @@ export default function Home() {
                 className="mr-2"
                 placeholder="Search By Name"
               />
-              <Button size="sm">
-                <Plus size={ICON_SIZE} />
-              </Button>
+              <AddPasswordDialog />
             </div>
           </div>
         </CardHeader>

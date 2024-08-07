@@ -4,6 +4,7 @@ import { twMerge } from "tailwind-merge";
 
 export const ICON_SIZE = 15;
 export const TOKEN_KEY = "token";
+export const USER_KEY = "user";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

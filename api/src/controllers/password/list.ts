@@ -6,6 +6,7 @@ export function listPasswords(req: Request, res: Response) {
     const list = passwordModel.list({
       filter: {
         search: (req.query.search as string | undefined) || "",
+        folder: (req.query.folder as string | undefined) || "",
       },
     });
 

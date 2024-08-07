@@ -6,3 +6,15 @@ export type Password = {
   username: string;
   password: string;
 };
+
+export type User = {
+  id: number;
+  name: string;
+  email: string;
+};
+
+export type Folder = {
+  id: number;
+  userId: number;
+  name: string;
+};
