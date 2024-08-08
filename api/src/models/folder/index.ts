@@ -1,3 +1,5 @@
+import { add } from "./add";
+import { edit } from "./edit";
 import { list } from "./list";
 
 export type Folder = {
@@ -8,4 +10,6 @@ export type Folder = {
 
 export const folderModel = {
   list,
+  add,
+  edit,
 };
