@@ -1,10 +1,11 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 import { columns } from "@/components/home/columns";
-import { AddPasswordDialog } from "@/components/home/components/AddDialog";
+import { AddPassword } from "@/components/home/components/AddPassword";
 import { FolderDropdown } from "@/components/home/components/FolderDropdown";
 import { DataTable } from "@/components/home/Table";
 import { Input } from "@/components/ui/input";
+import { useFolders } from "@/lib/hooks/useFolders";
 import { usePasswords } from "@/lib/hooks/usePasswords";
 import useQueryParams from "@/lib/hooks/useQueryParams";
 
@@ -12,12 +13,20 @@ export default function Home() {
   const { setParams, getParams } = useQueryParams();
   const { search, folder } = getParams(["search", "folder"]);
 
-  const { data } = usePasswords({
+  const {
+    data: folders,
+    refetch: refetchFolders,
+    isLoading: isFoldersLoading,
+  } = useFolders();
+
+  const { data, refetch: refetchPasswords } = usePasswords({
     filter: {
       search,
       folder,
     },
   });
+
+  console.log(data);
 
   const Table = () => {
     if (!data) return null;
@@ -45,7 +54,11 @@ export default function Home() {
               >
                 Home
               </h1>
-              <FolderDropdown />
+              <FolderDropdown
+                folders={folders}
+                isLoading={isFoldersLoading}
+                refetch={refetchFolders}
+              />
             </div>
             <div className="flex items-center">
               <Input
@@ -58,7 +71,7 @@ export default function Home() {
                 className="mr-2"
                 placeholder="Search By Name"
               />
-              <AddPasswordDialog />
+              <AddPassword refetch={refetchPasswords} />
             </div>
           </div>
         </CardHeader>

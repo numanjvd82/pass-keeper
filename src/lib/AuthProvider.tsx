@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.removeItem(TOKEN_KEY);
       navigate("/login");
     }
-  }, [navigate]);
+  }, []);
 
   useEffect(() => {
     checkToken();

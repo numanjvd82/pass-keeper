@@ -10,9 +10,5 @@ export function findOneById(id: number): FullUser | null {
   const stmt = db.prepare(sql`SELECT * FROM users WHERE id = ?`);
   const user = stmt.get(id);
 
-  if (!user) {
-    return null;
-  }
-
-  return user as FullUser;
+  return user as FullUser | null;
 }

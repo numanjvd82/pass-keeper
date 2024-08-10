@@ -9,7 +9,9 @@ export function initDb() {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       email TEXT NOT NULL UNIQUE,
-      hashedPassword TEXT NOT NULL
+      hashedPassword TEXT NOT NULL,
+      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `);
 
@@ -17,7 +19,9 @@ export function initDb() {
     CREATE TABLE IF NOT EXISTS folders (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       userId INTEGER NOT NULL REFERENCES users(id),
-      name TEXT NOT NULL
+      name TEXT NOT NULL,
+      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `);
 
@@ -26,9 +30,13 @@ export function initDb() {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       userId INTEGER NOT NULL REFERENCES users(id),
       name TEXT NOT NULL,
-      folderId INTEGER NOT NULL REFERENCES folders(id),
+      folderId INTEGER REFERENCES folders(id) ON DELETE SET NULL,
       username TEXT NOT NULL,
-      password TEXT NOT NULL
+      password TEXT NOT NULL,
+      uri TEXT NULL,
+      notes TEXT NULL,
+      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `);
 

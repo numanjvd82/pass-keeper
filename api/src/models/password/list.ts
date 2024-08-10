@@ -11,18 +11,20 @@ export const filterSchema = z.object({
 type PasswordFilterSchemaType = z.infer<typeof filterSchema>;
 
 const SELECT_CLAUSE = sql`
-  SELECT  "p".id,
-          "p".name as passwordName,
-          "p".userId,
-          "p".username,
-          "p".password,
-          "f".name as folder
+  SELECT "p".id, 
+  "p".name, 
+  "p".username, 
+  "p".password, 
+  "p".uri, 
+  "p".notes, 
+  "p".createdAt, 
+  "p".updatedAt, 
+  "f".id as folderId
 `;
 
 const FROM_CLAUSE = sql`
-  FROM passwords "p" 
-  INNER JOIN folders "f"
-  ON "p".folderId = "f".id
+  FROM passwords "p"
+  LEFT JOIN folders "f" ON "p".folderId = "f".id
 `;
 
 export const generateWhereClause = (filter: PasswordFilterSchemaType) => {
@@ -34,6 +36,8 @@ export const generateWhereClause = (filter: PasswordFilterSchemaType) => {
 
   if (filter.folder && filter.folder.length > 0) {
     whereClause.push(sql`"f".name = '${filter.folder}'`);
+  } else {
+    whereClause.push(sql`"p".folderId IS NULL`);
   }
 
   return whereClause.length > 0 ? whereClause.join(sql` AND `) : "";

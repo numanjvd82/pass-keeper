@@ -1,4 +1,4 @@
-import { Check, ChevronsUpDown, PlusIcon } from "lucide-react";
+import { Check, ChevronsUpDown } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -15,14 +15,26 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useFolders } from "@/lib/hooks/useFolders";
 import useQueryParams from "@/lib/hooks/useQueryParams";
+import { Folder } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { AddFolder } from "./AddFolder";
+import { DeleteFolder } from "./DeleteFolder";
+import { EditFolder } from "./EditFolder";
 
-export function FolderDropdown() {
+type Props = {
+  folders: Folder[] | undefined;
+  isLoading: boolean;
+  refetch: () => void;
+};
+
+export const FolderDropdown: React.FC<Props> = ({
+  folders,
+  isLoading,
+  refetch,
+}) => {
   const [open, setOpen] = useState(false);
   const { setParams, getParams, deleteParams } = useQueryParams();
-  const { data: folders, isLoading } = useFolders();
 
   const { folder: folderName } = getParams(["folder"]);
 
@@ -50,19 +62,16 @@ export function FolderDropdown() {
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent className=" p-0">
         <Command>
           <div className="flex flex-col justify-center">
-            {/* Replace button with add folder modal */}
-            <Button className="items-stretch" size="sm" variant="outline">
-              <PlusIcon className="h-4 w-4 shrink-0 opacity-50" />
-            </Button>
+            <AddFolder refetch={refetch} />
             <CommandInput placeholder="Search Folder" />
           </div>
           <CommandList>
             <CommandEmpty>No Folder found.</CommandEmpty>
             <CommandGroup>
-              {folders.map(({ name, id }) => (
+              {folders.map(({ name, id, userId }) => (
                 <CommandItem
                   key={id}
                   value={name}
@@ -72,14 +81,35 @@ export function FolderDropdown() {
                       : setParams({ folder: currentValue });
                     setOpen(false);
                   }}
+                  className="cursor-pointer"
                 >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      folderName === name ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  {name}
+                  <div className="flex flex-1 justify-between items-center">
+                    <div className="flex items-center">
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          folderName === name ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      {name}
+                    </div>
+                    <div className="flex gap-1">
+                      <EditFolder
+                        folder={{
+                          id,
+                          name,
+                          userId,
+                        }}
+                        refetch={refetch}
+                        closeFolderDropdown={() => setOpen(false)}
+                      />
+                      <DeleteFolder
+                        id={id}
+                        refetch={refetch}
+                        closeFolderDropdown={() => setOpen(false)}
+                      />
+                    </div>
+                  </div>
                 </CommandItem>
               ))}
             </CommandGroup>
@@ -88,4 +118,4 @@ export function FolderDropdown() {
       </PopoverContent>
     </Popover>
   );
-}
+};

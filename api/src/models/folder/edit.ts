@@ -18,7 +18,7 @@ export function edit(input: EditFolderInput) {
   // Update folder in database
   const stmt = db.prepare(sql`
 UPDATE folders
-SET name = ?
+SET name = ?, updatedAt = CURRENT_TIMESTAMP
 WHERE id = ? AND userId = ?
 RETURNING *;
   `);

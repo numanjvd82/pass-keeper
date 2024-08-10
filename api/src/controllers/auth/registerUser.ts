@@ -32,11 +32,9 @@ export function registerUser(req: Request, res: Response) {
     return res.status(400).json({ error: "Invalid request" });
   }
 
-  // validate request
   try {
     const parsedValues = registerSchema.parse({ email, password, name });
 
-    // check if email is already in use
     const existingUser = userModel.findOneByEmail(email);
 
     if (existingUser) {
@@ -54,7 +52,6 @@ export function registerUser(req: Request, res: Response) {
           return res.status(500).json({ error: "Something went wrong" });
         }
 
-        // create user
         try {
           // FUTURE ! Create a method on the user model to create a user
           db.prepare(
