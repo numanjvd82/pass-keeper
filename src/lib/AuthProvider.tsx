@@ -14,6 +14,7 @@ import { isTokenExpired, TOKEN_KEY } from "./utils";
 type AuthState = {
   token: string | undefined;
   authenticated: boolean;
+  decryptedKey?: Buffer;
 };
 
 type AuthProps = {
@@ -26,6 +27,7 @@ const initialState: AuthProps = {
   authState: {
     token: undefined,
     authenticated: false,
+    decryptedKey: undefined,
   },
   onLogin: async () => {},
   onLogout: () => {},
@@ -34,7 +36,7 @@ const initialState: AuthProps = {
 const AuthContext = createContext<AuthProps>(initialState);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const { mutateAsync, isLoading } = useLogin();
+  const { mutateAsync } = useLogin();
   const navigate = useNavigate();
   const [authState, setAuthState] = useState<AuthState>({
     token: undefined,
@@ -45,9 +47,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const token = localStorage.getItem(TOKEN_KEY);
 
     if (token && !isTokenExpired(token)) {
-      setAuthState({ token, authenticated: true });
+      setAuthState({
+        token,
+        authenticated: true,
+        decryptedKey: authState.decryptedKey,
+      });
     } else {
-      setAuthState({ token: undefined, authenticated: false });
+      setAuthState({
+        token: undefined,
+        authenticated: false,
+        decryptedKey: undefined,
+      });
       axiosClient.defaults.headers.common["Authorization"] = undefined;
       localStorage.removeItem(TOKEN_KEY);
       navigate("/login");
@@ -59,7 +69,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [checkToken]);
 
   const loginUser = async (email: string, password: string) => {
-    if (isLoading) console.log("Loading...");
     try {
       const data = await mutateAsync({ email, password });
       if (!data?.accessToken) {
@@ -71,7 +80,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return;
       }
 
-      setAuthState({ token: data.accessToken, authenticated: true });
+      setAuthState({
+        token: data.accessToken,
+        authenticated: true,
+        decryptedKey: data.decryptedKey,
+      });
       axiosClient.defaults.headers.common[
         "Authorization"
       ] = `Bearer ${data.accessToken}`;

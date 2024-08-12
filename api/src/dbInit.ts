@@ -10,6 +10,9 @@ export function initDb() {
       name TEXT NOT NULL,
       email TEXT NOT NULL UNIQUE,
       hashedPassword TEXT NOT NULL,
+      encryptedKey TEXT NOT NULL,
+      iv TEXT NOT NULL,
+      authTag TEXT NOT NULL,
       createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );

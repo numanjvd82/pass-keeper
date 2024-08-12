@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 import { Request, Response } from "express";
 import { sign } from "jsonwebtoken";
 import { userModel } from "../../models/user";
@@ -32,7 +33,29 @@ export function loginUser(req: Request, res: Response) {
         expiresIn: "1h",
       });
 
-      return res.status(200).json({ accessToken });
+      // derive a temporary key from the user's password
+      const derivedKey = crypto.pbkdf2Sync(
+        password,
+        "salt",
+        100000,
+        32,
+        "sha256"
+      );
+
+      // decrypt the stored encrypted key with the derived key using AES-256-GCM
+      const decipher = crypto.createDecipheriv(
+        "aes-256-gcm",
+        derivedKey,
+        Buffer.from(user.iv, "hex")
+      );
+      decipher.setAuthTag(Buffer.from(user.authTag, "hex"));
+
+      const decryptedKey = Buffer.concat([
+        decipher.update(Buffer.from(user.encryptedKey, "hex")),
+        decipher.final(),
+      ]);
+
+      return res.status(200).json({ accessToken, decryptedKey });
     } catch (e) {
       return res.status(500).json({
         error: "Something went wrong",

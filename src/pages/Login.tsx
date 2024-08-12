@@ -56,7 +56,7 @@ export default function Login() {
         className="flex justify-center items-center"
       >
         <Card>
-          <CardHeader className="p-4">Sign up</CardHeader>
+          <CardHeader className="p-4">Login</CardHeader>
           <CardDescription className="px-6 py-1 font-semibold text-center">
             Don't have an account? Click here to
             <Link to="/signup" className="text-blue-500">

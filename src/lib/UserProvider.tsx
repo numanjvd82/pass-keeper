@@ -12,6 +12,8 @@ const ctx: UserContext = {
     id: 0,
     name: "",
     email: "",
+    createdAt: new Date(),
+    updatedAt: new Date(),
   },
 };
 

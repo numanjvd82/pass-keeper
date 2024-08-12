@@ -16,7 +16,7 @@ export function fetchUser(req: Request, res: Response): Response<PartialUser> {
     return res.status(404).send("User not found");
   }
 
-  const { hashedPassword, ...partialUser } = user;
+  const { hashedPassword, encryptedKey, iv, authTag, ...partialUser } = user;
 
   return res.status(200).send(partialUser);
 }

@@ -1,8 +1,7 @@
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 import { Request, Response } from "express";
 import { z } from "zod";
-import { db } from "../..";
-import { sql } from "../../lib/utils";
 import { userModel } from "../../models/user";
 
 const registerSchema = z.object({
@@ -23,6 +22,11 @@ export type FullUser = {
   name: string;
   email: string;
   hashedPassword: string;
+  encryptedKey: string;
+  iv: string;
+  authTag: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export function registerUser(req: Request, res: Response) {
@@ -53,13 +57,35 @@ export function registerUser(req: Request, res: Response) {
         }
 
         try {
-          // FUTURE ! Create a method on the user model to create a user
-          db.prepare(
-            sql`
-      INSERT INTO users (name, email, hashedPassword)
-      VALUES (?, ?, ?);
-    `
-          ).run(parsedValues.name, parsedValues.email, hash);
+          // Random key for encryption
+          const encryptionKey = crypto.randomBytes(32);
+
+          // derive a key from the password
+          const deriveKey = crypto.pbkdf2Sync(
+            parsedValues.password,
+            "salt",
+            100000,
+            32,
+            "sha256"
+          );
+
+          // encrypt the key with the derived key using AES-256-GCM
+          const iv = crypto.randomBytes(12);
+          const cipher = crypto.createCipheriv("aes-256-gcm", deriveKey, iv);
+          const encryptedKey = Buffer.concat([
+            cipher.update(encryptionKey),
+            cipher.final(),
+          ]).toString("hex");
+          const authTag = cipher.getAuthTag().toString("hex");
+
+          userModel.createOne({
+            name: parsedValues.name,
+            email: parsedValues.email,
+            hashedPassword: hash,
+            encryptedKey,
+            iv: iv.toString("hex"),
+            authTag,
+          });
 
           return res.status(200).json({ message: "User created" });
         } catch (e) {
