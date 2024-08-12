@@ -7,18 +7,22 @@ export default function authenticateUser(
   next: NextFunction
 ) {
   try {
-    const token = req.headers.authorization?.split(" ")[1];
+    const token = req.cookies.accessToken;
 
     if (!token) {
       return res.status(401).json({ error: "Unauthorized" });
     }
 
     // Verify the token
-    const decodedToken = verify(token, process.env.JWT_SECRET!);
+    verify(token, process.env.JWT_SECRET!, (err: any, decoded: any) => {
+      if (err) {
+        return res.status(401).send({ error: "Unauthorized" });
+      }
 
-    // Attach the user ID to the request object
-    // @ts-ignore
-    req.userId = decodedToken.id;
+      // Attach the user ID to the request object
+      // @ts-ignore
+      req.userId = decoded.id;
+    });
 
     next();
   } catch (error) {

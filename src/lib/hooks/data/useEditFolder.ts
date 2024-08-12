@@ -15,7 +15,7 @@ const editFolder = async ({ id, name }: { id: number; name: string }) => {
     if (err instanceof Error) {
       toast({
         title: "Error",
-        description: err.message,
+        description: "Failed to edit folder",
         variant: "destructive",
       });
     }

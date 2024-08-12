@@ -5,7 +5,6 @@ import { AddPassword } from "@/components/home/components/AddPassword";
 import { FolderDropdown } from "@/components/home/components/FolderDropdown";
 import { DataTable } from "@/components/home/Table";
 import { Input } from "@/components/ui/input";
-import { useAuth } from "@/lib/AuthProvider";
 import { useFolders } from "@/lib/hooks/useFolders";
 import { usePasswords } from "@/lib/hooks/usePasswords";
 import useQueryParams from "@/lib/hooks/useQueryParams";
@@ -13,9 +12,9 @@ import useQueryParams from "@/lib/hooks/useQueryParams";
 export default function Home() {
   const { setParams, getParams } = useQueryParams();
   const { search, folder } = getParams(["search", "folder"]);
-  const { authState } = useAuth();
+  // const { authState } = useAuth();
 
-  console.log(authState);
+  // console.log(authState);
 
   const {
     data: folders,

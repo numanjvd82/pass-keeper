@@ -1,5 +1,6 @@
 import Database from "better-sqlite3";
 import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
@@ -25,7 +26,13 @@ db.pragma("journal_mode = WAL");
 app.use(bodyParser.json());
 //support parsing of application/x-www-form-urlencoded post data
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cookieParser());
+app.use(
+  cors({
+    origin: "http://localhost:5173", // React app
+    credentials: true,
+  })
+);
 app.use(morgan("dev"));
 
 app.use("/auth", authRouter);

@@ -21,7 +21,7 @@ const addPassword = async (password: InputQuery) => {
     if (err instanceof Error) {
       toast({
         title: "Error",
-        description: err.message,
+        description: "Failed to add password",
         variant: "destructive",
       });
     }

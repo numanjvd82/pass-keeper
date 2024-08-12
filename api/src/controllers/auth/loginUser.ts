@@ -55,7 +55,11 @@ export function loginUser(req: Request, res: Response) {
         decipher.final(),
       ]);
 
-      return res.status(200).json({ accessToken, decryptedKey });
+      res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: process.env.ENV === "PROD",
+      });
+      return res.status(200).json({ decryptedKey });
     } catch (e) {
       return res.status(500).json({
         error: "Something went wrong",

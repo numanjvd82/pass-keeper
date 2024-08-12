@@ -22,7 +22,7 @@ export const usePasswords = (query: Query) => {
     } catch (err: any) {
       toast({
         title: "Error",
-        description: err.message,
+        description: "An error occurred while fetching passwords.",
         variant: "destructive",
       });
     }

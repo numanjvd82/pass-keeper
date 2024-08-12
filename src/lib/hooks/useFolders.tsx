@@ -14,7 +14,7 @@ export const useFolders = () => {
       if (err instanceof Error) {
         toast({
           title: "Error",
-          description: err.message,
+          description: "Failed to fetch folders",
           variant: "destructive",
         });
       }

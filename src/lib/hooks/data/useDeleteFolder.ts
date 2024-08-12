@@ -12,7 +12,7 @@ const deleteFolder = async (id: number) => {
     if (err instanceof Error) {
       toast({
         title: "Error",
-        description: err.message,
+        description: "Failed to delete folder",
         variant: "destructive",
       });
     }

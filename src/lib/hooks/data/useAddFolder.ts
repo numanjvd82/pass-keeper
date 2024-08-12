@@ -15,7 +15,7 @@ const addFolder = async (name: string) => {
     if (err instanceof Error) {
       toast({
         title: "Error",
-        description: err.message,
+        description: "Failed to add folder",
         variant: "destructive",
       });
     }

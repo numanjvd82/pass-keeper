@@ -1,18 +1,10 @@
 import { toast } from "@/components/ui/use-toast";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import { useNavigate } from "react-router-dom"; // Added useLocation
+import { createContext, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { axiosClient } from "./axios";
 import { useLogin } from "./hooks/data/useLogin";
-import { isTokenExpired, TOKEN_KEY } from "./utils";
 
 type AuthState = {
-  token: string | undefined;
   authenticated: boolean;
   decryptedKey?: Buffer;
 };
@@ -21,16 +13,17 @@ type AuthProps = {
   authState: AuthState;
   onLogin: (email: string, password: string) => Promise<any>;
   onLogout: () => void;
+  getDecryptedKey: () => Buffer | undefined;
 };
 
 const initialState: AuthProps = {
   authState: {
-    token: undefined,
     authenticated: false,
     decryptedKey: undefined,
   },
   onLogin: async () => {},
   onLogout: () => {},
+  getDecryptedKey: () => undefined,
 };
 
 const AuthContext = createContext<AuthProps>(initialState);
@@ -39,58 +32,61 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { mutateAsync } = useLogin();
   const navigate = useNavigate();
   const [authState, setAuthState] = useState<AuthState>({
-    token: undefined,
     authenticated: false,
   });
 
-  const checkToken = useCallback(() => {
-    const token = localStorage.getItem(TOKEN_KEY);
-
-    if (token && !isTokenExpired(token)) {
-      setAuthState({
-        token,
-        authenticated: true,
-        decryptedKey: authState.decryptedKey,
-      });
-    } else {
-      setAuthState({
-        token: undefined,
-        authenticated: false,
-        decryptedKey: undefined,
-      });
-      axiosClient.defaults.headers.common["Authorization"] = undefined;
-      localStorage.removeItem(TOKEN_KEY);
-      navigate("/login");
-    }
-  }, []);
-
   useEffect(() => {
-    checkToken();
-  }, [checkToken]);
+    const checkAuthStatus = async () => {
+      try {
+        const response = await axiosClient.get("/auth/me");
+        if (!response.data.authenticated) {
+          setAuthState({
+            authenticated: false,
+            decryptedKey: undefined,
+          });
+          navigate("/login");
+        }
+        const decryptedKey = sessionStorage.getItem("decryptedKey");
+        setAuthState({
+          authenticated: true,
+          decryptedKey: decryptedKey
+            ? Buffer.from(decryptedKey, "base64")
+            : undefined,
+        });
+      } catch (error) {
+        setAuthState({
+          authenticated: false,
+          decryptedKey: undefined,
+        });
+        navigate("/login");
+      }
+    };
+
+    checkAuthStatus();
+  }, []);
 
   const loginUser = async (email: string, password: string) => {
     try {
       const data = await mutateAsync({ email, password });
-      if (!data?.accessToken) {
+      console.log(data);
+      if (data) {
+        setAuthState({
+          authenticated: true,
+          decryptedKey: data.decryptedKey, // Store the decrypted key from login
+        });
+
+        sessionStorage.setItem(
+          "decryptedKey",
+          data.decryptedKey.toString("base64")
+        );
+        navigate("/");
+      } else {
         toast({
           title: "Error",
           description: "Invalid Email or Password",
           variant: "destructive",
         });
-        return;
       }
-
-      setAuthState({
-        token: data.accessToken,
-        authenticated: true,
-        decryptedKey: data.decryptedKey,
-      });
-      axiosClient.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${data.accessToken}`;
-
-      localStorage.setItem(TOKEN_KEY, data.accessToken);
-      navigate("/");
     } catch (error: unknown) {
       if (error instanceof Error) {
         toast({
@@ -102,26 +98,32 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const logoutUser = () => {
-    // Reset auth state on logout
-    setAuthState({ token: undefined, authenticated: false });
-    axiosClient.defaults.headers.common["Authorization"] = undefined;
-    localStorage.removeItem(TOKEN_KEY);
-    navigate("/login");
+  const logoutUser = async () => {
+    try {
+      await axiosClient.post("/auth/logout");
+      setAuthState({ authenticated: false, decryptedKey: undefined }); // Clear the decrypted key
+      navigate("/login");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to log out.",
+        variant: "destructive",
+      });
+    }
   };
+
+  const getDecryptedKey = () => authState.decryptedKey;
 
   const value = {
     authState,
     onLogin: loginUser,
     onLogout: logoutUser,
+    getDecryptedKey, // Function to access the decrypted key
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
-  if (!AuthContext) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
   return useContext(AuthContext);
 };
