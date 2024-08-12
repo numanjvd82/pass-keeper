@@ -133,7 +133,7 @@ export const AddPassword: React.FC<Props> = ({ refetch }) => {
           <Plus size={ICON_SIZE} />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md ">
         <DialogHeader>
           <DialogTitle>Store your credentials</DialogTitle>
           <DialogDescription>
@@ -143,40 +143,120 @@ export const AddPassword: React.FC<Props> = ({ refetch }) => {
         <div className="p-4">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              {formInputs.map(({ name, label, placeholder, type }) => (
+              <div className="flex gap-2">
                 <FormField
-                  key={name}
                   control={form.control}
-                  name={name}
+                  name="passwordName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{label}</FormLabel>
+                      <FormLabel>Name</FormLabel>
                       <FormControl>
-                        {type === "text" || type === "password" ? (
-                          <Input
-                            type={type}
-                            placeholder={placeholder}
-                            {...field}
-                          />
-                        ) : type === "comment" ? (
-                          <Textarea placeholder={placeholder} {...field} />
-                        ) : type === "select" ? (
-                          <CustomSelect
-                            defaultValue={field.value}
-                            onValueChange={field.onChange}
-                            list={folders}
-                            placeholder={placeholder}
-                            getItemValue={(item) => String(item.id)}
-                            renderItem={(item) => item.name}
-                            {...field}
-                          />
-                        ) : null}
+                        <Input
+                          type="text"
+                          placeholder="e.g. Facebook"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-              ))}
+
+                <FormField
+                  control={form.control}
+                  name="folderId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Folder</FormLabel>
+                      <FormControl>
+                        <CustomSelect
+                          defaultValue={field.value}
+                          onValueChange={field.onChange}
+                          list={folders}
+                          placeholder="e.g. Social"
+                          getItemValue={(item) => String(item.id)}
+                          renderItem={(item) => item.name}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="flex gap-2">
+                <FormField
+                  control={form.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Username</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          placeholder="e.g. john.doe"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="e.g. password123"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="uri"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>URI</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        placeholder="e.g. https://facebook.com"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="notes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Notes</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="e.g. Password for Facebook"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <Button type="submit">Add</Button>
             </form>
@@ -186,3 +266,13 @@ export const AddPassword: React.FC<Props> = ({ refetch }) => {
     </Dialog>
   );
 };
+
+// <CustomSelect
+//                             defaultValue={field.value}
+//                             onValueChange={field.onChange}
+//                             list={folders}
+//                             placeholder={placeholder}
+//                             getItemValue={(item) => String(item.id)}
+//                             renderItem={(item) => item.name}
+//                             {...field}
+//                           />

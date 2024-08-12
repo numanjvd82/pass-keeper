@@ -26,8 +26,6 @@ export default function Home() {
     },
   });
 
-  console.log(data);
-
   const Table = () => {
     if (!data) return null;
     if (data.length === 0) {
